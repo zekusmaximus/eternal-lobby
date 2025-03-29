@@ -11,7 +11,7 @@ export const ambientSound: Writable<AudioState> = writable({
 });
 
 export const initializeAudio = () => {
-    const audioElement = new Audio('/sounds/ambient.mp3');
+    const audioElement = new Audio('/sounds/ambient_loop.mp3');
     audioElement.loop = true;
     
     ambientSound.set({
