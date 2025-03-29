@@ -1,0 +1,69 @@
+// src/lib/stores/environment.ts
+import { writable } from 'svelte/store';
+
+// Export all types in one consolidated declaration
+export interface Branch {
+  path: string;
+  width: number;
+}
+
+export interface Leaf {
+  x: number;
+  y: number;
+  size: number;
+}
+
+export interface Particle {
+  x: number;
+  y: number;
+  opacity: number;
+  rotation: number;
+  speedX: number;
+  speedY: number;
+}
+
+export interface EnvironmentState {
+  treeBranches: Branch[];
+  treeLeaves: Leaf[];
+  treeOpacity: number;
+  shadowLength: number;
+  lightIntensity: number;
+  dustParticles: Particle[];
+}
+
+const initialEnvironment: EnvironmentState = {
+  treeBranches: [],
+  treeLeaves: [],
+  treeOpacity: 0.8,
+  shadowLength: 30,
+  lightIntensity: 0.3,
+  dustParticles: []
+};
+
+function generateBranchPath(index: number): string {
+  // Implementation that returns an SVG path string
+  return `M50 ${180 - index*2} Q${55 + index} ${150 - index*3} 50 ${120 - index*2}`;
+}
+
+export const environmentStore = writable<EnvironmentState>(initialEnvironment);
+
+export const growTree = () => {
+  environmentStore.update(env => {
+    const newBranch: Branch = {
+      path: generateBranchPath(env.treeBranches.length),
+      width: 1 + Math.random() * 1.5
+    };
+    
+    const newLeaf: Leaf = {
+      x: 40 + Math.random() * 20,
+      y: 70 + Math.random() * 50,
+      size: 0.5 + Math.random() * 1.5
+    };
+
+    return {
+      ...env,
+      treeBranches: [...env.treeBranches, newBranch],
+      treeLeaves: [...env.treeLeaves, newLeaf]
+    };
+  });
+};

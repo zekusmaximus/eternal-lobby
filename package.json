@@ -1,5 +1,8 @@
 {
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "howler": "^2.2.4",
+    "open-props": "^1.7.14",
+    "svelte-motion": "^0.12.2"
   }
 }
