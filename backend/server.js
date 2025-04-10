@@ -1,46 +1,49 @@
-import express from 'express';
-import http from 'http';
-import { Server } from 'socket.io';
-import cors from 'cors';
+const WebSocket = require('ws');
 
-const app = express();
-const server = http.createServer(app);
+// Create a WebSocket server instance, listening on port 8080
+const wss = new WebSocket.Server({ port: 8080 });
 
-// Configure CORS - Allow requests from your Svelte frontend dev server
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5173", // Your Svelte frontend address
-    methods: ["GET", "POST"]
-  }
+console.log('WebSocket server started on port 8080');
+
+// Keep track of connected clients
+const clients = new Set();
+
+wss.on('connection', (ws) => {
+    console.log('Client connected');
+    clients.add(ws);
+
+    // Handle messages received from the client
+    ws.on('message', (message) => {
+        console.log(`Received message => ${message}`);
+
+        // Broadcast the message to all connected clients EXCEPT the sender
+        broadcast(message, ws); 
+    });
+
+    // Handle client disconnection
+    ws.on('close', () => {
+        console.log('Client disconnected');
+        clients.delete(ws);
+    });
+
+    // Handle potential errors
+    ws.on('error', (error) => {
+        console.error('WebSocket error:', error);
+        clients.delete(ws); // Remove client on error
+    });
 });
 
-const PORT = process.env.PORT || 3000; // Use port 3000 unless specified
+// Function to broadcast messages to all clients except the sender
+function broadcast(message, sender) {
+    const messageString = message.toString(); // Ensure message is a string
+    console.log(`Broadcasting message: ${messageString} (excluding sender)`);
+    clients.forEach((client) => {
+        // Only send if the client is not the sender and is ready
+        if (client !== sender && client.readyState === WebSocket.OPEN) { 
+            client.send(messageString);
+        }
+    });
+}
 
-// Basic route (optional, just to check if server is running via browser)
-app.get('/', (req, res) => {
-  res.send('Eternal Lobby Backend is Running');
-});
-
-// Socket.IO connection logic
-io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
-
-  // Handle user disconnecting
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
-
-  // --- Phase 1: Simple Chat Feature ---
-  socket.on('chat message', (msg) => {
-    console.log('Message received:', msg);
-    // Broadcast the message to everyone connected
-    io.emit('chat message', msg); // Send to all clients, including sender
-  });
-
-  // --- Placeholder for Phase 1: Random Prompt System ---
-  // We'll add logic here later
-});
-
-server.listen(PORT, () => {
-  console.log(`Server listening on *:${PORT}`);
-});
+// Optional: Add a simple HTTP server part if needed later for health checks or serving static files
+// For now, the WebSocket server is standalone.

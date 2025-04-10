@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   // Import both the store and the growTree function
-  import { environmentStore, growTree } from '$lib/stores/environment';
+  import { environmentStore, growTree, decayTree } from '$lib/stores/environment';
 
   let growthProgress = 0;
   let animationFrame: number;
-  let growthInterval: number; // Variable to hold the interval ID
+  let decayInterval: number; // Variable to hold the decay interval ID
 
   // Existing animation function for fading effects (can be adjusted/removed)
   const animateTreeVisuals = (duration: number) => { // Renamed for clarity
@@ -34,19 +34,27 @@
     // Start the fading animation (current duration 10 seconds)
     animateTreeVisuals(10000);
 
+    // REMOVE AUTOMATIC GROWTH (grow by clicking now)
     // Start the growth interval - add a branch/leaf every 500ms (adjust as needed)
+    // if (typeof window !== 'undefined') {
+    //   growthInterval = window.setInterval(() => {
+    //     // Call the imported growTree function from the store
+    //     growTree(); // This function updates the environmentStore
+    //   }, 500); // Grow every 0.5 seconds
+    // }
+
+    // Start the decay interval (remove branch/leaf every 10 seconds, adjust as needed)
     if (typeof window !== 'undefined') {
-      growthInterval = window.setInterval(() => {
-        // Call the imported growTree function from the store
-        growTree(); // This function updates the environmentStore
-      }, 500); // Grow every 0.5 seconds
+      decayInterval = window.setInterval(() => {
+        decayTree(); // Call the decayTree function from the store
+      }, 10000); // Decay every 10 seconds (adjust as needed)
     }
 
-    // Cleanup function: clears both animation frame and interval
+    // Cleanup function: clears both animation frame and intervals
     return () => {
       if (typeof window !== 'undefined') {
         if (animationFrame) window.cancelAnimationFrame(animationFrame);
-        if (growthInterval) window.clearInterval(growthInterval);
+        if (decayInterval) window.clearInterval(decayInterval); // Clear the decay interval
       }
     };
   });
@@ -64,17 +72,22 @@
     stroke-width="{Math.max(0.5, 3 - growthProgress)}" fill="none"
   />
 
-  {#each $environmentStore.treeBranches as branch (branch.path)} <path
+  {#each $environmentStore.treeBranches as branch (branch.path)}
+    <path
       d={branch.path}
-      stroke="rgba(90, 70, 50, {Math.max(0.1, 0.7 - (growthProgress * 0.3))})" stroke-width={branch.width}
-      fill="none" />
+      stroke="rgba(90, 70, 50, {Math.max(0.1, 0.7 - (growthProgress * 0.3))})"
+      stroke-width={branch.width}
+      fill="none"
+    />
   {/each}
 
-  {#each $environmentStore.treeLeaves as leaf (leaf.x + leaf.y)} <circle
+  {#each $environmentStore.treeLeaves as leaf (leaf.x + leaf.y)}
+    <circle
       cx={leaf.x}
       cy={leaf.y}
       r={leaf.size}
-      fill="rgba(180, 200, 150, {Math.max(0.1, 0.4 - (growthProgress * 0.2))})" />
+      fill="rgba(180, 200, 150, {Math.max(0.1, 0.4 - (growthProgress * 0.2))})"
+    />
   {/each}
 </svg>
 
