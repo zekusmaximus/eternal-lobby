@@ -10,11 +10,30 @@
   import ChatInterface from '$lib/components/Interface/Chat.svelte';
   import ExistentialTree from '$lib/components/Environment/Tree.svelte';
   import FlickerLight from '$lib/components/Environment/FlickerLight.svelte';
-  import Atmosphere from '$lib/components/Environment/Atmosphere.svelte
+  import Atmosphere from '$lib/components/Environment/Atmosphere.svelte'
+  import Prompt from '$lib/components/Interface/Prompt.svelte';
+  import { showRandomPrompt, currentPrompt } from '$lib/stores/promptStore';
+  import NPC from '$lib/components/Interface/NPC.svelte';
+  import { showRandomNPC, currentNPC } from '$lib/stores/npcStore';
+  import Shadow from '$lib/components/Environment/Shadow.svelte';
+  import { showShadow, shadowVisible } from '$lib/stores/shadowStore';
 
   onMount(() => {
     initializeAudio();
     startWaiting();
+    // Show a random prompt every 15 seconds
+    const promptInterval = setInterval(showRandomPrompt, 15000);
+     // Show a random NPC every 30 seconds
+    const npcInterval = setInterval(showRandomNPC, 30000);
+     // Show a random shadow every 45 seconds
+    const shadowInterval = setInterval(showShadow, 45000);
+
+    return () => {
+      stopWaiting();
+      clearInterval(promptInterval);
+      clearInterval(npcInterval);
+      clearInterval(shadowInterval);
+    };
   });
 
   onDestroy(() => {
@@ -46,6 +65,19 @@
       triggerHallucination("The tree remains stubbornly still.", 3000);
     }
   }
+
+    function inspectPainting() {
+        triggerHallucination("The painting stares back at you, its eyes filled with an unsettling familiarity.", 3000);
+    }
+
+    function listenToRadio() {
+        playRandomSoundEffect();
+        triggerHallucination("A faint, distorted melody drifts from the radio.", 2000);
+    }
+
+    function openDoor() {
+        triggerHallucination("The door is locked. You feel a sense of hopelessness.", 3000);
+    }
 
   function expressDespair() {
     addDespair(10);
@@ -81,15 +113,18 @@
   <FlickerLight />
   <ExistentialTree />
   <Atmosphere />
+    <Shadow visible={$shadowVisible} />
 
   <!-- User Interface -->
   <TimeHeader />
-  <ChatInterface />
 
   <div class="actions">
     <button on:click={inspectLight}>Inspect Light</button>
     <button on:click={checkHallway}>Check Hallway</button>
     <button on:click={checkTree}>Inspect Tree</button>
+      <button on:click={inspectPainting}>Inspect Painting</button>
+      <button on:click={listenToRadio}>Listen to Radio</button>
+      <button on:click={openDoor}>Open Door</button>
   </div>
     <div class="emotions">
         <button on:click={expressDespair}>Express Despair</button>
@@ -97,6 +132,18 @@
         <button on:click={stareIntoVoid}>Stare into Void</button>
         <p>Current State: {$despairLevel.description}</p>
     </div>
+
+    <div class="chat-container">
+        <ChatInterface />
+    </div>
+
+    {#if $currentPrompt}
+      <Prompt prompt={$currentPrompt} />
+    {/if}
+
+    {#if $currentNPC}
+        <NPC name={$currentNPC.name} message={$currentNPC.message} />
+    {/if}
 
   <!-- Hidden Audio Container -->
   {#if $ambientSound.element}
@@ -191,4 +238,14 @@
       opacity: 0.5;
     }
   }
+    .chat-container {
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+        width: 300px;
+        height: 200px;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+    }
 </style>

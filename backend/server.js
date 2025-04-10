@@ -1,7 +1,7 @@
-const WebSocket = require('ws');
+import { WebSocketServer } from 'ws';
 
 // Create a WebSocket server instance, listening on port 8080
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocketServer({ port: 8080 });
 
 console.log('WebSocket server started on port 8080');
 
@@ -39,7 +39,7 @@ function broadcast(message, sender) {
     console.log(`Broadcasting message: ${messageString} (excluding sender)`);
     clients.forEach((client) => {
         // Only send if the client is not the sender and is ready
-        if (client !== sender && client.readyState === WebSocket.OPEN) { 
+        if (client !== sender && client.readyState === 1) { 
             client.send(messageString);
         }
     });
