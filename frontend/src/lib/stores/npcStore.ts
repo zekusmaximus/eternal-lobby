@@ -1,6 +1,11 @@
 import { writable } from 'svelte/store';
 
-const npcs = [
+interface NPC {
+  name: string;
+  message: string;
+}
+
+const npcs: NPC[] = [
   {
     name: "Caretaker",
     message: "Oh, still here?",
@@ -11,7 +16,7 @@ const npcs = [
   },
 ];
 
-export const currentNPC = writable(null);
+export const currentNPC = writable<NPC | null>(null);
 
 export function showRandomNPC() {
   const randomIndex = Math.floor(Math.random() * npcs.length);

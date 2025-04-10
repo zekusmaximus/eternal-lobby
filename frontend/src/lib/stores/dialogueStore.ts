@@ -45,10 +45,6 @@ export function triggerHallucination(text: string, duration = 4000) {
             activeHallucination.set('');
             hallucinationTimer = undefined;
         }, duration);
-    } else {
-        // If text is empty, clear immediately if needed
-        activeHallucination.set('');
-        hallucinationTimer = undefined;
     }
 }
 
@@ -59,8 +55,3 @@ export function triggerRandomHallucination(duration = 4000) {
     triggerHallucination(randomText, duration);
     console.log(`Triggering hallucination: ${randomText}`); // For debugging
 }
-
-// --- Cleanup on module unload (optional but good practice) ---
-// Svelte modules don't have instances, so cleanup might need to be handled
-// if you start intervals *within* this store itself. For now, timers are
-// managed by triggerHallucination and cleared appropriately.

@@ -54,7 +54,7 @@ export function playRandomSoundEffect() {
             // Play the sound effect
             soundEffect.volume = state.volume;
             soundEffect.play();
-            console.log(\`Playing sound effect: ${soundEffectPath}\`);
+            console.log(`Playing sound effect: ${soundEffectPath}`);
             // No need to pause the ambient sound; the new sound effect will
             // briefly overlap, which is fine for these short effects.
         }

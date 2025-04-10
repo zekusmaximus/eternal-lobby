@@ -42,7 +42,7 @@ const initialEnvironment: EnvironmentState = {
 
 function generateBranchPath(index: number): string {
   // Implementation that returns an SVG path string
-  return \`M50 ${180 - index*2} Q${55 + index} ${150 - index*3} 50 ${120 - index*2}\`;
+  return "M50 " + (180 - index*2) + " Q" + (55 + index) + " " + (150 - index*3) + " 50 " + (120 - index*2);
 }
 
 export const environmentStore = writable<EnvironmentState>(initialEnvironment);
@@ -71,8 +71,8 @@ export const growTree = () => {
 
       return {
         ...env,
-        treeBranches: [...env.treeBranches.slice(-MAX_BRANCHES + 1), newBranch], // Limit branch count
-        treeLeaves: [...env.treeLeaves.slice(-MAX_LEAVES + 1), newLeaf] // Limit leaf count
+        treeBranches: [...env.treeBranches.slice(-MAX_BRANCHES + 1), newBranch],
+        treeLeaves: [...env.treeLeaves.slice(-MAX_LEAVES + 1), newLeaf]
       };
     } else {
       grew = false; // Set grew to false if the tree didn't grow
@@ -104,4 +104,4 @@ export const decayTree = () => {
 
     return { ...env };
   });
-};
+}

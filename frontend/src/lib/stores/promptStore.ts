@@ -8,7 +8,7 @@ const prompts = [
   "...",
 ];
 
-export const currentPrompt = writable(null);
+export const currentPrompt = writable<string | null>(null);
 
 export function showRandomPrompt() {
   const randomIndex = Math.floor(Math.random() * prompts.length);

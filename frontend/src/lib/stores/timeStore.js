@@ -1,8 +1,8 @@
 import { writable, derived } from 'svelte/store';
 // Import the function from dialogueStore
-import { triggerRandomHallucination } from '$lib/stores/dialogueStore';
+import { triggerRandomHallucination } from './dialogueStore';
 // Import the function from audioStore
-import { playRandomSoundEffect } from '$lib/stores/audioStore';
+import { playRandomSoundEffect } from './audioStore';
 
 export const realTime = writable(0); // Tracks actual elapsed seconds
 export const waitingTime = writable(0); // Tracks the distorted "waiting" counter
@@ -13,6 +13,7 @@ export const distortedTime = derived(
   ([$rt, $wt]) => $wt + ($rt * 0.78) // Non-integer multiplier creates unease
 );
 
+/** @type {number | null} */
 let intervalId = null; // Variable to hold the interval ID for cleanup
 let lastUpdateTimestamp = Date.now(); // Use a more descriptive name
 let totalElapsedSeconds = 0; // Keep track of total elapsed seconds accurately
