@@ -16,6 +16,8 @@
     pkgs.git
     pkgs.eslint_d
     pkgs.prettier-d-slim
+    pkgs.nodejs
+    pkgs.nodePackages.npm
   ];
 
   # Sets environment variables in the workspace
